@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -44,5 +45,11 @@ public class ProductController {
     @GetMapping("/search")
     public ResponseEntity<List<ProductResponse>> searchProducts(@RequestParam String keyword){
         return  ResponseEntity.ok(productService.searchProduct(keyword));
+    }
+
+    @GetMapping("/instances")
+    public List<ProductResponse> getInstance(){
+        List<ProductResponse> response = productService.getAllProducts();
+        return response;
     }
 }
