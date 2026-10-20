@@ -21,9 +21,14 @@ spring:
 #    hibernate:
 #      ddl-auto: update
 #    database-platform: org.hibernate.dialect.PostgreSQLDialect
-profiles:
-  active: dev
-
-
+#  profiles:
+#    active: dev
 server:
   port: 8084
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
+    register-with-eureka: true
+    fetch-registry: true
