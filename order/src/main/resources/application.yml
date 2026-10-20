@@ -1,6 +1,6 @@
 spring:
   application:
-    name: order-service
+    name: order
 
   h2:
     console:
