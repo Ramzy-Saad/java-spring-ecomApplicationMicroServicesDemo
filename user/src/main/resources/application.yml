@@ -33,3 +33,11 @@ eureka:
     register-with-eureka: true
     fetch-registry: true
     registry-fetch-interval-seconds: 5
+management:
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+  endpoint:
+    shutdown:
+      enabled: true
