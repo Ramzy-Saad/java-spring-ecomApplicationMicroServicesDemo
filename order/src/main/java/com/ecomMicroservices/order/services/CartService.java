@@ -1,48 +1,47 @@
 package com.ecomMicroservices.order.services;
 
+import com.ecomMicroservices.order.clients.ProductServiceClient;
+import com.ecomMicroservices.order.clients.UserServiceClient;
 import com.ecomMicroservices.order.dto.CartItemRequest;
+import com.ecomMicroservices.order.dto.ProductResponse;
+import com.ecomMicroservices.order.dto.UserResponse;
 import com.ecomMicroservices.order.models.CartItem;
 import com.ecomMicroservices.order.repositories.CartItemRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
 
-//    private final ProductRepository productRepository;
     private final CartItemRepository cartItemRepository;
-//    private final UserRepository userRepository;
+    private final ProductServiceClient productServiceClient;
+    private final UserServiceClient userServiceClient;
 
     public Boolean addToCart(Long userId, CartItemRequest request) {
-//        Optional<Product> productOpt = productRepository.findById(request.getProductId());
-//        if(productOpt.isEmpty())
-//            return false;
-//        Product product = productOpt.get();
-//        if(product.getStock()< request.getQty())
-//            return false;
-//        Optional<User> userOpt = userRepository.findById(Long.valueOf(userId));
-//        if(userOpt.isEmpty())
-//            return false;
-//
-//        User user = userOpt.get();
+
+        ProductResponse productResponse = productServiceClient.getProductById(request.getProductId());
+        if(productResponse == null || productResponse.getStock()< request.getQty())
+            return false;
+        UserResponse userResponse = userServiceClient.fetchUser(userId);
+        if(userResponse == null)
+            return false;
+
         CartItem existingCartItem = cartItemRepository.findByUserIdAndProductId(userId,request.getProductId());
         if(existingCartItem != null){
             existingCartItem.setQty(request.getQty() + existingCartItem.getQty());
-            existingCartItem.setPrice(BigDecimal.valueOf(1000.0));
+            existingCartItem.setPrice(productResponse.getPrice());
             cartItemRepository.save(existingCartItem);
         }else{
             CartItem cartItem = new CartItem();
             cartItem.setUserId(userId);
             cartItem.setProductId(request.getProductId());
             cartItem.setQty(request.getQty());
-            cartItem.setPrice(BigDecimal.valueOf(request.getQty()).multiply(BigDecimal.valueOf(1000)));
+            cartItem.setPrice(BigDecimal.valueOf(request.getQty()).multiply(productResponse.getPrice()));
             cartItemRepository.save(cartItem);
         }
         return true;

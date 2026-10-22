@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 
@@ -21,6 +20,12 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<List<ProductResponse>> getProducts(){
         return ResponseEntity.ok(productService.getAllProducts());
+    }
+    @GetMapping("{id}")
+    public ResponseEntity<ProductResponse> getProductById(@PathVariable Long id){
+        return productService.getProductById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping
@@ -49,7 +54,6 @@ public class ProductController {
 
     @GetMapping("/instances")
     public List<ProductResponse> getInstance(){
-        List<ProductResponse> response = productService.getAllProducts();
-        return response;
+        return  productService.getAllProducts();
     }
 }

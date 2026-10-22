@@ -75,11 +75,16 @@ public class ProductService {
         product.setStock(productRequest.getStock());
         product.setCategory(productRequest.getCategory());
         product.setImageUrl(productRequest.getImageUrl());
+        product.setActive(productRequest.getActive());
     }
 
     public List<ProductResponse> searchProduct(String keyword) {
         return productRepository.searchproducts(keyword).stream()
                 .map(this::mappingProductToToProductResponse)
                 .collect(Collectors.toList());
+    }
+
+    public Optional<ProductResponse> getProductById(Long id) {
+        return productRepository.findByIdAndActiveTrue(id).map(this::mappingProductToToProductResponse);
     }
 }
