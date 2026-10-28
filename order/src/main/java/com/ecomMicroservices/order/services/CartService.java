@@ -7,6 +7,7 @@ import com.ecomMicroservices.order.dto.ProductResponse;
 import com.ecomMicroservices.order.dto.UserResponse;
 import com.ecomMicroservices.order.models.CartItem;
 import com.ecomMicroservices.order.repositories.CartItemRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ public class CartService {
     private final ProductServiceClient productServiceClient;
     private final UserServiceClient userServiceClient;
 
+    @CircuitBreaker(name="productService", fallbackMethod = "addToCartFailBack")
     public Boolean addToCart(Long userId, CartItemRequest request) {
 
         ProductResponse productResponse = productServiceClient.getProductById(request.getProductId());
@@ -63,5 +65,14 @@ public class CartService {
 
         public void clearCart(Long userId) {
             cartItemRepository.deleteByUserId(userId);
+        }
+
+        public Boolean addToCartFailBack( Long userId, CartItemRequest request, Exception exception) {
+
+            System.out.println("Fallback called!");
+            exception.printStackTrace();
+            System.out.println("Reason: " + exception.getMessage());
+
+            return false;
         }
 }

@@ -2,49 +2,36 @@ spring:
   application:
     name: gateway
 
-#  cloud:
-#    gateway:
-#      server:
-#        webflux:
-#          routes:
-#            - id: product-service
-#              uri: lb://product-service
-#              predicates:
-#                - Path=/products/**
-#              filters:
-#                 - "RewritePath=/products(?<segment>/?.*),/api/products${segment}"
-#
-#            - id: user-service
-#              uri: lb://user-service
-#              predicates:
-#                - Path=/api/users/**
-#              filters:
-#                 - "RewritePath=/users(?<segment>/?.*),/api/users{segment}"
-#
-#            - id: order-service
-#              uri: lb://order-service
-#              predicates:
-#                - Path=/api/orders/**
-#              filters:
-#                 - "RewritePath=/orders(?<segment>/?.*),/api/orders{segment}"
-#
-#            - id: cart-service
-#              uri: lb://order-service
-#              predicates:
-#                - Path=/api/cart/**
-#              filters:
-#                 - "RewritePath=/cart(?<segment>/?.*),/api/cart{segment}"
-#
-#            - id: eureka-service
-#              uri: http://localhost:8761
-#              predicates:
-#                - Path=/eureka/main
-#              filters:
-#                - SetPath=/
-#            - id: eureka-server-static
-#              uri: http://localhost:8761
-#              predicates:
-#                - Path=/eureka/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  tracing:
+    sampling:
+      probability: 1.0
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
 
 server:
   port: 8080
+
+
+#Circuit Breaker
+resilience4j:
+  circuitbreaker:
+    instances:
+      ecomGatewayBreaker:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimum-number-of-calls: 5
+        permitted-number-of-calls-in-half-open-state: 3
+        wait-duration-in-open-state: 10s
+        failure-rate-threshold: 50
+        automatic-transition-from-open-to-half-open-enabled: true
+        sliding-window-type: COUNT_BASED

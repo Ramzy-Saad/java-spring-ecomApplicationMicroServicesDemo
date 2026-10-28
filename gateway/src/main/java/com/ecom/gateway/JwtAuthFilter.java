@@ -15,7 +15,7 @@ public class JwtAuthFilter implements WebFilter {
         String path = exchange.getRequest().getURI().getPath();
 
         // Allow Eureka dashboard without JWT
-        if (path.startsWith("/eureka")) {
+        if (path.startsWith("/eureka") ||path.startsWith("/actuator")) {
             return chain.filter(exchange);
         }
 
