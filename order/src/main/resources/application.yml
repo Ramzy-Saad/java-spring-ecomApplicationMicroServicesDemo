@@ -72,4 +72,4 @@ resilience4j:
     instances:
       retryProductService:
         maxAttempts: 5
-        waitDuration: 500ms
+        waitDuration: 5s

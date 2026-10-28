@@ -52,3 +52,14 @@ logging:
     rollingpolicy:
       max-file-size: 5MB
       max-history: 7 # in days
+
+
+
+#Rate limiter
+resilience4j:
+  ratelimiter:
+    instances:
+      ratebreaker:
+        timeout-duration: 0
+        limit-refresh-period: 1s
+        limit-for-period: 4
