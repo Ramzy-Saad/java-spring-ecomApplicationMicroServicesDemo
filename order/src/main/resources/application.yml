@@ -7,6 +7,12 @@ spring:
       enabled: true
   datasource:
     url: jdbc:h2:mem:test
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+
   jpa:
     show-sql: true
     hibernate:
@@ -25,6 +31,13 @@ spring:
 #    active: dev
 server:
   port: 8084
+rabbitmq:
+  exchange:
+    name: order.exchange
+  queue:
+    name: order.queue
+  routing:
+    key: order.tracking
 
 eureka:
   instance:

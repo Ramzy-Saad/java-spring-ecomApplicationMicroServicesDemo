@@ -1,5 +1,6 @@
 package com.ecomMicroservices.order.services;
 
+import com.ecomMicroservices.order.dto.OrderCreatedEvent;
 import com.ecomMicroservices.order.dto.OrderItemDTO;
 import com.ecomMicroservices.order.dto.OrderResponse;
 import com.ecomMicroservices.order.models.OrderItem;
@@ -8,7 +9,8 @@ import com.ecomMicroservices.order.models.CartItem;
 import com.ecomMicroservices.order.models.Order;
 import com.ecomMicroservices.order.repositories.OrderRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.User;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -20,8 +22,13 @@ import java.util.Optional;
 public class OrderService {
 
     private final CartService cartService;
-//    private final UserRepository userRepository;
     private final OrderRepository orderRepository;
+    private final RabbitTemplate rabbitTemplate;
+    @Value("${rabbitmq.exchange.name}")
+    private String exchangeName;
+
+    @Value("${rabbitmq.routing.key}")
+    private String routingKey;
 
     public Optional<OrderResponse> createOrder(Long userId) {
 
@@ -57,6 +64,16 @@ public class OrderService {
         Order savedOrder = orderRepository.save(order);
         //clear cart
         cartService.clearCart(userId);
+        OrderCreatedEvent eventOrder = new OrderCreatedEvent(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getOrderStatus(),
+                mapToOrderItemsDTOs(savedOrder.getItems()),
+                savedOrder.getTotalAmount(),
+                savedOrder.getCreatedAt()
+        );
+        rabbitTemplate.convertAndSend(exchangeName, routingKey, eventOrder);
+
         return Optional.of(mapToOrderResponse(savedOrder));
 
     }
@@ -75,5 +92,15 @@ public class OrderService {
                 )).toList(),
                 order.getCreatedAt()
         );
+    }
+
+    private List<OrderItemDTO> mapToOrderItemsDTOs(List<OrderItem> items){
+        return items.stream().map(orderItem -> new OrderItemDTO(
+                orderItem.getId(),
+                orderItem.getProductId(),
+                orderItem.getQty(),
+                orderItem.getPrice(),
+                orderItem.getPrice().multiply(BigDecimal.valueOf(orderItem.getQty()))
+        )).toList();
     }
 }
