@@ -12,14 +12,14 @@ import reactor.core.publisher.Mono;
 public class JwtAuthFilter implements WebFilter {
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
+//        String path = exchange.getRequest().getURI().getPath();
 
         // Allow Eureka dashboard without JWT
-        if (path.startsWith("/eureka") ||path.startsWith("/actuator")) {
-            return chain.filter(exchange);
-        }
+//        if (path.startsWith("/eureka") ||path.startsWith("/actuator")) {
+//            return chain.filter(exchange);
+//        }
 
-        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+//        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
 //        if(authHeader == null || !authHeader.startsWith("Bearer ")){
 //            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
 //            return exchange.getResponse().setComplete();
