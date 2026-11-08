@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final KeyCloakAdminService keyCloakAdminService;
 
     public List<UserResponse> fetchAllUSer(){
         return userRepository.findAll()
@@ -27,8 +28,12 @@ public class UserService {
     }
 
     public void addUSer(UserRequest userRequest){
+        String token  = keyCloakAdminService.getAdminAccessToken();
+        String keycloakUserId = keyCloakAdminService.createUser(token, userRequest);
+
         User user = new User();
         mapUserRequestToUser(user, userRequest);
+        user.setKeycloakId(keycloakUserId);
         userRepository.save(user);
     }
 
@@ -53,6 +58,7 @@ public class UserService {
         response.setEmail(user.getEmail());
         response.setPhone(user.getPhone());
         response.setRole(user.getRole());
+        response.setKeycloakId(user.getKeycloakId());
         if(user.getAddress() != null){
             AddressDto addressDto = new AddressDto();
             addressDto.setCity(user.getAddress().getCity());
