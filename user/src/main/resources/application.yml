@@ -65,10 +65,12 @@ resilience4j:
         limit-for-period: 4
 
 #keycloak
+# client-uid : can get from url in client page in keycloak
 keycloak:
   admin:
     username: user
     password: user
     server-url: http://localhost:8443
     realm: ecom-app
-    client-id: admin=ecom
+    client-id: oauth2-pkce
+    client-uid: 56f5ea41-233a-42b8-8041-427c488f45b0

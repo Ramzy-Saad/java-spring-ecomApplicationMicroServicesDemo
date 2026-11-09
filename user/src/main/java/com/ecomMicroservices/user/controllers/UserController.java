@@ -3,7 +3,6 @@ package com.ecomMicroservices.user.controllers;
 import com.ecomMicroservices.user.dto.UserRequest;
 import com.ecomMicroservices.user.dto.UserResponse;
 import com.ecomMicroservices.user.services.UserService;
-import io.github.resilience4j.ratelimiter.RequestNotPermitted;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
