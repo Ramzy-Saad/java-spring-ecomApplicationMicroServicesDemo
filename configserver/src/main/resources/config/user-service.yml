@@ -1,0 +1,73 @@
+spring:
+  #  datasource:
+  #    url: jdbc:postgresql://localhost:5432/usersdb
+  #    username: ecom
+  #    password: ecom
+  #  jpa:
+  #    database: POSTGRESQL
+  #    show-sql: true
+  #    hibernate:
+  #      ddl-auto: update
+  #    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  h2:
+    console:
+      enabled: true
+  datasource:
+    url: jdbc:h2:mem:test
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: create
+#  profiles:
+#    active: dev
+server:
+  port: 8082
+
+eureka:
+  instance:
+    hostname: localhost
+    prefer-ip-address: false
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: shutdown
+  endpoint:
+    shutdown:
+      enabled: true
+
+logging:
+  file:
+    name: logs/${spring.application.name}.log
+  logback:
+    rollingpolicy:
+      max-file-size: 5MB
+      max-history: 7 # in days
+
+
+
+#Rate limiter
+resilience4j:
+  ratelimiter:
+    instances:
+      ratebreaker:
+        timeout-duration: 0
+        limit-refresh-period: 1s
+        limit-for-period: 4
+
+#keycloak
+# client-uid : can get from url in client page in keycloak
+keycloak:
+  admin:
+    username: user
+    password: user
+    server-url: http://localhost:8443
+    realm: ecom-app
+    client-id: oauth2-pkce
+    client-uid: 56f5ea41-233a-42b8-8041-427c488f45b0
